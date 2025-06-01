@@ -17,13 +17,7 @@ connectDB();
 const app = express();
 const server = createServer(app);
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "https://azzipizza-customer.vercel.app",
-  "https://azzi-pizza-admin-panel.vercel.app",
-  "https://azzipizza.it",
-];
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
 
 const corsOptions = {
   origin: allowedOrigins,
