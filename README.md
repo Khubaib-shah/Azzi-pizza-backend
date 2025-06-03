@@ -37,8 +37,7 @@ Welcome to the **Pizzeria** project! This application allows customers to browse
 - **Frontend**: React.js
 - **Backend**: Node.js with Express.js
 - **Database**: MongoDB
-- **Authentication**: JSON Web Tokens (JWT)
-- **Payment Processing**: Integration with a payment gateway (e.g., Paypal)
+- **Payment Processing**: Integration with a payment gateway Paypal
 
 ## Installation
 
@@ -46,7 +45,7 @@ Welcome to the **Pizzeria** project! This application allows customers to browse
 
 - Node.js and npm installed.
 - MongoDB running locally or a MongoDB Atlas account.
-- Stripe account for payment processing.
+- PayPal account for payment processing.
 
 ### Steps
 
