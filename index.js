@@ -6,7 +6,6 @@ import connectDB from "./config/DBconnect.js";
 import { Server } from "socket.io";
 
 import errorMiddleware from "./middleware/errorMiddleware.js";
-import Order from "./models/OrderModel.js";
 import menuRoutes from "./routes/menuRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
@@ -19,7 +18,7 @@ const server = createServer(app);
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
 
-const corsOptions = {
+export const corsOptions = {
   origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
@@ -30,7 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-  console.log("🔥 Request from:", req.headers.origin, req.method, req.url);
+  console.log("Request from:", req.headers.origin, req.method, req.url);
   next();
 });
 
@@ -38,24 +37,11 @@ export const io = new Server(server, {
   cors: corsOptions,
 });
 
-export const sendUpdatedOrders = async () => {
-  try {
-    const orders = await Order.find().populate(
-      "items.menuItem",
-      "name price category"
-    );
-    io.emit("latestOrders", orders);
-  } catch (error) {
-    console.error("Error fetching orders:", error);
-  }
-};
-
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "api is working",
     menuRoutes: "/api/menu",
     orderRoutes: "/api/orders",
-    paymentRoutes: "/api/payment",
   });
 });
 

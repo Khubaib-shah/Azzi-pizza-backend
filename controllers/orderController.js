@@ -1,4 +1,8 @@
-import { sendUpdatedOrders } from "../index.js";
+import {
+  sendNewOrder,
+  sendUpdatedOrder,
+  sendDeletedOrderId,
+} from "../utils/realTimeOrders.js";
 import Menu from "../models/MenuModel.js";
 import Order from "../models/OrderModel.js";
 
@@ -107,7 +111,7 @@ export const createOrder = async (req, res) => {
 
     const savedOrder = await newOrder.save();
     console.log(savedOrder);
-    await sendUpdatedOrders();
+    await sendNewOrder();
 
     res.status(201).json(savedOrder);
   } catch (error) {
@@ -160,12 +164,13 @@ export const updateOrderStatus = async (req, res) => {
       { new: true, runValidators: false }
     );
 
+    console.log(updatedOrder);
+
     if (!updatedOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    await sendUpdatedOrders();
-    console.log("Order status updated in real-time!");
+    await sendUpdatedOrder(id);
 
     res.status(200).json({
       message: "Order updated successfully",
@@ -182,8 +187,7 @@ export const deleteOrder = async (req, res) => {
     if (!deletedOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
-
-    await sendUpdatedOrders();
+    sendDeletedOrderId(req.params.id);
 
     console.log("Order deleted in real-time!");
     res.status(200).json({ message: "Order deleted successfully" });
