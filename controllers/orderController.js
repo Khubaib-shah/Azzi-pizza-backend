@@ -110,7 +110,6 @@ export const createOrder = async (req, res) => {
     }
 
     const savedOrder = await newOrder.save();
-    console.log(savedOrder);
     await sendNewOrder(savedOrder._id);
 
     res.status(201).json(savedOrder);
