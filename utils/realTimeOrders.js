@@ -9,6 +9,7 @@ export const sendNewOrder = async (orderId) => {
     );
     if (!newOrder) return;
     io.emit("order:new", newOrder);
+    console.log("New order emitted:", newOrder._id);
   } catch (error) {
     console.error("Error fetching new order:", error);
   }
