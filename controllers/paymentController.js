@@ -54,8 +54,8 @@ export const payForOrder = async (req, res) => {
         payment_method: "paypal",
       },
       redirect_urls: {
-        return_url: `http://localhost:5173/payment-success?orderId=${savedOrder._id}`,
-        cancel_url: `http://localhost:5173/payment-cancelled`,
+        return_url: `${process.env.CLIENT_URL}payment-success?orderId=${savedOrder._id}`,
+        cancel_url: `${process.env.CLIENT_URL}payment-cancelled`,
       },
       transactions: [
         {
