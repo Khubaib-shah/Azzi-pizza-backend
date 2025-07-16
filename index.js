@@ -52,4 +52,4 @@ app.use("/api/payment", paymentRoutes);
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5001;
-// server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
