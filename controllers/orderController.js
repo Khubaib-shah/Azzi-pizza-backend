@@ -110,7 +110,7 @@ export const createOrder = async (req, res) => {
     }
 
     const savedOrder = await newOrder.save();
-    await sendNewOrder(savedOrder._id);
+    // await sendNewOrder(savedOrder._id);
 
     res.status(201).json(savedOrder);
   } catch (error) {
@@ -169,7 +169,7 @@ export const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    await sendUpdatedOrder(req.params.id);
+    // await sendUpdatedOrder(req.params.id);
 
     res.status(200).json({
       message: "Order updated successfully",
@@ -187,7 +187,7 @@ export const deleteOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    sendDeletedOrderId(req.params.id);
+    // sendDeletedOrderId(req.params.id);
 
     console.log("Order deleted in real-time!");
     res.status(200).json({ message: "Order deleted successfully" });
