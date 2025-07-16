@@ -1,7 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import { createServer } from "http";
+// import { createServer } from "http";
 import connectDB from "./config/DBconnect.js";
 // import { Server } from "socket.io";
 
@@ -14,7 +14,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-const server = createServer(app);
+// const server = createServer(app);
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
 
