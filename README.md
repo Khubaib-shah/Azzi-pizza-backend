@@ -1,57 +1,58 @@
-# Takeaway Pizzeria
+# Azzipizza Backend API
 
-Welcome to the **Pizzeria** project! This application allows customers to browse the menu, customize their pizzas, place orders, and make secure online payments—all from the comfort of their homes.
+**Node.js/Express backend powering Azzipizza's online ordering system**  
+A robust RESTful API supporting pizza customization, real-time order processing, and secure payment integration.
 
-## Table of Contents
+## 🚀 Core Features
 
-- [Project Overview](#project-overview)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+### Order Management
+- Menu item CRUD operations
+- Customizable pizza builder API
+- Order status workflow (pending → cooking → out-for-delivery → completed)
 
-## Project Overview
+### Payment System
+- PayPal integration with webhook verification
+- Payment intent creation
+- Refund processing capability
 
-**Takeaway Pizzeria** is a web application designed to streamline the ordering process for our pizzeria. Customers can:
+### Real-time Functionality
+- Socket.io for instant kitchen notifications
+- Order status push updates
+- Admin dashboard order stream
 
-- View a detailed menu with item names, prices, photos, and ingredients.
-- Customize pizzas by adding extra ingredients.
-- Place orders directly through the website.
-- Make secure online payments via credit and debit cards.
-- Receive efficient order deliveries.
+### Security
+- JWT authentication (customer/staff roles)
+- Rate limiting on auth endpoints
+- Sensitive data encryption
 
-## Features
+## 💻 Tech Stack
 
-- **Online Ordering System**: Browse the menu, select items, and place orders directly from the website.
-- **Online Payment**: Secure payments via credit and debit cards.
-- **Detailed Menu**: Includes item names, prices, photos, and ingredients.
-- **Pizza Customization**: Add extra ingredients to customize your pizza.
-- **Customer Information Collection**: Collects full name, delivery address, and contact phone number for accurate deliveries.
-- **Order Management**: Displays estimated preparation time and includes all necessary delivery details.
-- **About Us Section**: Provides information about the pizzeria, its story, location, and contact information.
+**Core**  
+`Node.js 18` | `Express 4.x` | `MongoDB 6` | `Mongoose 7`
 
-## Technologies Used
+**Key Packages**  
+- `socket.io` - Real-time communication  
+- `jsonwebtoken` - Authentication  
+- `paypal-rest-sdk` - Payment processing  
+- `joi` - Request validation  
+- `winston` - Structured logging
 
-- **Frontend**: React.js
-- **Backend**: Node.js with Express.js
-- **Database**: MongoDB
-- **Payment Processing**: Integration with a payment gateway Paypal
+## 🛠️ Installation (Backend Specific)
 
-## Installation
+```bash
+# 1. Clone and enter directory
+git clone https://github.com/Khubaib-shah/Azzi-pizza-backend.git
+cd Azzi-pizza-backend
 
-### Prerequisites
+# 2. Install dependencies
+npm install
 
-- Node.js and npm installed.
-- MongoDB running locally or a MongoDB Atlas account.
-- PayPal account for payment processing.
+# 3. Configure environment
+cp .env.example .env
+# Fill in:
+# - MONGODB_URI
+# - PAYPAL_CLIENT_ID & SECRET
+# - JWT_SECRET
 
-### Steps
-
-1. **Clone the repository**:
-
-   ```bash
-   git clone https://github.com/yourusername/takeaway-pizzeria.git
-   cd takeaway-pizzeria
-   ```
+# 4. Start development server
+npm run dev
