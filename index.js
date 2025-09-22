@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import express from "express";
 import { createServer } from "http";
 import connectDB from "./config/DBconnect.js";
-// import { Server } from "socket.io";
+import { Server } from "socket.io";
 
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import menuRoutes from "./routes/menuRoutes.js";
@@ -33,9 +33,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// export const io = new Server(server, {
-//   cors: corsOptions,
-// });
+export const io = new Server(server, {
+  cors: corsOptions,
+});
 
 app.get("/", (req, res) => {
   res.status(200).json({
