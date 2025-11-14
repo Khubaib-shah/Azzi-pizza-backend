@@ -5,6 +5,7 @@ import {
 } from "../utils/realTimeOrders.js";
 import Menu from "../models/MenuModel.js";
 import Order from "../models/OrderModel.js";
+import { log } from "console";
 
 export const createOrder = async (req, res) => {
   try {
@@ -16,6 +17,8 @@ export const createOrder = async (req, res) => {
       total,
       customizations,
       paymentMethod,
+      doorbellName,
+      deliveryTime,
     } = req.body;
 
     console.log("req.body =>", req.body);
@@ -104,6 +107,9 @@ export const createOrder = async (req, res) => {
       deliveryAddress,
       phoneNumber,
       paymentMethod,
+      doorbellName: doorbellName || "",
+      deliveryTime: deliveryTime || null,
+
     });
     if (paymentMethod === "scan") {
       newOrder.paymentStatus = "Completed";

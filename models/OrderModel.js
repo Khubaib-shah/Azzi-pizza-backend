@@ -30,7 +30,9 @@ const orderSchema = new mongoose.Schema(
         customizations: String,
       },
     ],
+
     description: String,
+
     totalPrice: {
       type: Number,
       required: [true, "Total price is required"],
@@ -43,20 +45,33 @@ const orderSchema = new mongoose.Schema(
       enum: ["cash", "paypal", "scan", "bancomat"],
       required: true,
     },
+
     paymentStatus: {
       type: String,
       enum: ["Pending", "Completed"],
       default: "Pending",
     },
+    
     orderStatus: {
       type: String,
       enum: ["Pending", "Preparing", "Out for Delivery", "Delivered"],
       default: "Pending",
     },
+    
     eta: {
       type: Date,
     },
+
+    doorbellName: {
+      type: String,
+      required: [true, "Doorbell name is required"],
+    },
+    deliveryTime: {
+      type: String,
+    },
+
     name: String,
+    
     deliveryAddress: {
       street: {
         type: String,
@@ -71,6 +86,7 @@ const orderSchema = new mongoose.Schema(
         required: [true, "Zip code is required"],
       },
     },
+
     phoneNumber: {
       type: String,
       required: [true, "Phone Number is required"],
