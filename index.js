@@ -9,6 +9,7 @@ import errorMiddleware from "./middleware/errorMiddleware.js";
 import menuRoutes from "./routes/menuRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import restaurantStatusRoute from "./routes/restaurantStatusRoute.js";
 
 dotenv.config();
 connectDB();
@@ -48,6 +49,7 @@ app.get("/", (req, res) => {
 app.use("/api/menu", menuRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/settings", restaurantStatusRoute);
 
 app.use(errorMiddleware);
 
