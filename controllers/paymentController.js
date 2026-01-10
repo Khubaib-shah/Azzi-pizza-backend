@@ -1,5 +1,6 @@
 import paypal from "paypal-rest-sdk";
 import Order from "../models/OrderModel.js";
+import { io } from "../index.js";
 
 paypal.configure({
   mode: process.env.PAYPAL_MODE,
@@ -11,26 +12,38 @@ export const payForOrder = async (req, res) => {
   console.log("Received payment request:", req.body);
 
   try {
+    // console.log("Step 1: Destructuring body");   
     const {
       items,
       total: clientTotal,
       name,
       phoneNumber,
       deliveryAddress,
+      doorbellName,
+      deliveryTime,
+      customizations
     } = req.body;
 
+    // console.log("Step 2: Creating Order Instance");
     const newOrder = new Order({
       items,
       name,
       phoneNumber,
       totalPrice: clientTotal,
       deliveryAddress,
+      doorbellName,
+      deliveryTime,
+      customizations,
       paymentMethod: "paypal",
       paymentStatus: "Pending",
       orderStatus: "Pending",
     });
 
+    // console.log("Step 3: Saving Order");
     const savedOrder = await newOrder.save();
+    // console.log("Step 4: Order Saved", savedOrder._id);
+
+    io.to("orders").emit("order:new", savedOrder);
 
     const paypalItems = items.map((item) => ({
       name: item.name,
@@ -54,7 +67,7 @@ export const payForOrder = async (req, res) => {
         payment_method: "paypal",
       },
       redirect_urls: {
-        return_url: `${process.env.CLIENT_URL}/payment-success?orderId=${savedOrder._id}`,
+        return_url: `${process.env.CLIENT_URL}/payment-success?orderId=${savedOrder._id}&order=${encodeURIComponent(name)}`,
         cancel_url: `${process.env.CLIENT_URL}/payment-cancelled`,
       },
       transactions: [
@@ -76,11 +89,16 @@ export const payForOrder = async (req, res) => {
       ],
     };
 
+    // console.log("Step 5: Invoking PayPal Create");
     paypal.payment.create(create_payment_json, (error, payment) => {
       if (error) {
-        console.error("PayPal Error:", error.response);
+        console.error("PayPal Create Error:", JSON.stringify(error, null, 2));
+        if (error.response) {
+            console.error("PayPal Error Response:", JSON.stringify(error.response, null, 2));
+        }
         return res.status(500).json({
-          message: error.response?.error || "Payment creation failed",
+          message: "Payment creation failed",
+          details: error.response || error.message || error
         });
       }
 
@@ -122,7 +140,8 @@ export const handleSuccess = async (req, res) => {
       if (payment.state === "approved") {
         console.log("Already approved. Updating DB.");
 
-        await Order.findByIdAndUpdate(orderId, { paymentStatus: "Completed" });
+        const updatedOrder = await Order.findByIdAndUpdate(orderId, { paymentStatus: "Completed" }, { new: true });
+        io.to("orders").emit("order:update", updatedOrder);
 
         return res.status(200).json({
           success: true,
@@ -147,6 +166,8 @@ export const handleSuccess = async (req, res) => {
               await Order.findByIdAndUpdate(orderId, {
                 paymentStatus: "Completed",
               });
+              const updatedOrder = await Order.findById(orderId);
+              io.to("orders").emit("order:update", updatedOrder);
               return res.status(200).json({
                 success: true,
                 message: "Payment previously completed",
@@ -161,9 +182,10 @@ export const handleSuccess = async (req, res) => {
             });
           }
 
-          await Order.findByIdAndUpdate(orderId, {
+          const updatedOrder = await Order.findByIdAndUpdate(orderId, {
             paymentStatus: "Completed",
-          });
+          }, { new: true });
+          io.to("orders").emit("order:update", updatedOrder);
 
           return res.status(200).json({
             success: true,
