@@ -1,5 +1,6 @@
-import cors from "cors";
 import dotenv from "dotenv";
+dotenv.config();
+import cors from "cors";
 import express from "express";
 import { createServer } from "http";
 import connectDB from "./config/DBconnect.js";
@@ -12,7 +13,6 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import restaurantStatusRoute from "./routes/restaurantStatusRoute.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 
-dotenv.config();
 connectDB();
 
 const app = express();

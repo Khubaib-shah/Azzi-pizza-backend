@@ -3,14 +3,26 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const getEnv = (key) => {
+  const val = process.env[key];
+  if (!val) return null;
+  // Strip surrounding quotes if they exist
+  return val.replace(/^["'](.+)["']$/, '$1');
+};
+
 const serviceAccount = {
-  project_id: process.env.FIREBASE_PROJECT_ID,
-  private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  project_id: getEnv("FIREBASE_PROJECT_ID"),
+  private_key: getEnv("FIREBASE_PRIVATE_KEY")?.replace(/\\n/g, "\n"),
+  client_email: getEnv("FIREBASE_CLIENT_EMAIL"),
 };
 
 if (!serviceAccount.project_id || !serviceAccount.private_key || !serviceAccount.client_email) {
-  console.warn("[Firebase Admin]: Missing credentials. Push notifications will not work.");
+  const missing = [];
+  if (!serviceAccount.project_id) missing.push("FIREBASE_PROJECT_ID");
+  if (!serviceAccount.private_key) missing.push("FIREBASE_PRIVATE_KEY");
+  if (!serviceAccount.client_email) missing.push("FIREBASE_CLIENT_EMAIL");
+  
+  console.warn(`[Firebase Admin]: Missing credentials (${missing.join(", ")}). Push notifications will not work.`);
 } else {
   try {
     admin.initializeApp({
