@@ -4,10 +4,20 @@ import Notification from "../models/Notification.js";
 import { io } from "../index.js";
 
 /**
- * Send push notification to multiple tokens
+ * Send push notification to multiple tokens with mobile optimizations
  */
 export const sendPushNotification = async (tokens, payload) => {
-  if (!messaging || !tokens.length) return;
+  if (!messaging) {
+    console.error("[FCM]: Messaging not initialized. Check Firebase credentials.");
+    return;
+  }
+
+  if (!tokens.length) {
+    console.warn("[FCM]: No tokens provided for notification.");
+    return;
+  }
+
+  console.log(`[FCM]: Attempting to send to ${tokens.length} devices...`);
 
   try {
     const response = await messaging.sendEachForMulticast({
@@ -17,9 +27,26 @@ export const sendPushNotification = async (tokens, payload) => {
         body: payload.body,
       },
       data: payload.data || {},
+      android: {
+        priority: "high",
+        notification: {
+          sound: "default",
+          clickAction: "FLUTTER_NOTIFICATION_CLICK", // Often helps with click handling
+          channelId: "high_priority",
+        },
+      },
+      apns: {
+        payload: {
+          aps: {
+            sound: "default",
+            badge: 1,
+            contentAvailable: true,
+          },
+        },
+      },
     });
 
-    console.log(`[FCM]: Successfully sent ${response.successCount} messages`);
+    console.log(`[FCM]: Successfully sent ${response.successCount} messages. Failures: ${response.failureCount}`);
 
     // Handle failures and clean up invalid tokens
     if (response.failureCount > 0) {
@@ -27,6 +54,7 @@ export const sendPushNotification = async (tokens, payload) => {
       response.responses.forEach((res, idx) => {
         if (!res.success) {
           const errorCode = res.error?.code;
+          console.error(`[FCM]: Token ${idx} failed with error: ${errorCode}`);
           if (
             errorCode === "messaging/registration-token-not-registered" ||
             errorCode === "messaging/invalid-registration-token"
@@ -38,11 +66,11 @@ export const sendPushNotification = async (tokens, payload) => {
 
       if (tokensToRemove.length > 0) {
         await AdminDevice.deleteMany({ fcmToken: { $in: tokensToRemove } });
-        console.log(`[FCM]: Cleaned up ${tokensToRemove.length} invalid tokens`);
+        console.log(`[FCM]: Cleaned up ${tokensToRemove.length} invalid tokens from database`);
       }
     }
   } catch (error) {
-    console.error("[FCM]: Error sending multicast message", error);
+    console.error("[FCM]: Critical error sending multicast message", error);
   }
 };
 

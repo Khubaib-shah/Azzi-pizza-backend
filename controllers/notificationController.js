@@ -26,6 +26,44 @@ export const registerDevice = async (req, res) => {
 };
 
 /**
+ * Get count of registered devices
+ */
+export const getDeviceCount = async (req, res) => {
+  try {
+    const count = await AdminDevice.countDocuments();
+    res.status(200).json({ count });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
+ * Send a test push notification
+ */
+export const testPush = async (req, res) => {
+  try {
+    const { sendPushNotification } = await import("../utils/notificationService.js");
+    const devices = await AdminDevice.find();
+    const tokens = devices.map((d) => d.fcmToken);
+
+    if (tokens.length === 0) {
+      return res.status(404).json({ success: false, message: "No registered devices found" });
+    }
+
+    await sendPushNotification(tokens, {
+      title: "Test Notification 🍕",
+      body: "If you see this, push notifications are working!",
+      data: { test: "true" },
+    });
+
+    res.status(200).json({ success: true, deviceCount: tokens.length });
+  } catch (error) {
+    console.error("[NotificationController]: Error in test-push", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
  * Get notification history
  */
 export const getNotifications = async (req, res) => {
