@@ -6,7 +6,6 @@ import {
 import Menu from "../models/MenuModel.js";
 import Order from "../models/OrderModel.js";
 import { log } from "console";
-import { handleNewOrderNotification } from "../utils/notificationService.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -118,7 +117,6 @@ export const createOrder = async (req, res) => {
 
     const savedOrder = await newOrder.save();
     await sendNewOrder(savedOrder._id);
-    await handleNewOrderNotification(savedOrder);
 
     res.status(201).json(savedOrder);
   } catch (error) {
