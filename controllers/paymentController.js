@@ -1,6 +1,6 @@
 import paypal from "paypal-rest-sdk";
 import Order from "../models/OrderModel.js";
-import { io } from "../index.js";
+import { sendNewOrder } from "../utils/realTimeOrders.js";
 
 paypal.configure({
   mode: process.env.PAYPAL_MODE,
@@ -42,8 +42,6 @@ export const payForOrder = async (req, res) => {
     // console.log("Step 3: Saving Order");
     const savedOrder = await newOrder.save();
     // console.log("Step 4: Order Saved", savedOrder._id);
-
-    io.to("orders").emit("order:new", savedOrder);
 
     const paypalItems = items.map((item) => ({
       name: item.name,
@@ -94,7 +92,7 @@ export const payForOrder = async (req, res) => {
       if (error) {
         console.error("PayPal Create Error:", JSON.stringify(error, null, 2));
         if (error.response) {
-            console.error("PayPal Error Response:", JSON.stringify(error.response, null, 2));
+          console.error("PayPal Error Response:", JSON.stringify(error.response, null, 2));
         }
         return res.status(500).json({
           message: "Payment creation failed",
@@ -141,7 +139,7 @@ export const handleSuccess = async (req, res) => {
         console.log("Already approved. Updating DB.");
 
         const updatedOrder = await Order.findByIdAndUpdate(orderId, { paymentStatus: "Completed" }, { new: true });
-        io.to("orders").emit("order:update", updatedOrder);
+        await sendNewOrder(orderId);
 
         return res.status(200).json({
           success: true,
@@ -166,8 +164,7 @@ export const handleSuccess = async (req, res) => {
               await Order.findByIdAndUpdate(orderId, {
                 paymentStatus: "Completed",
               });
-              const updatedOrder = await Order.findById(orderId);
-              io.to("orders").emit("order:update", updatedOrder);
+              await sendNewOrder(orderId);
               return res.status(200).json({
                 success: true,
                 message: "Payment previously completed",
@@ -185,7 +182,7 @@ export const handleSuccess = async (req, res) => {
           const updatedOrder = await Order.findByIdAndUpdate(orderId, {
             paymentStatus: "Completed",
           }, { new: true });
-          io.to("orders").emit("order:update", updatedOrder);
+          await sendNewOrder(orderId);
 
           return res.status(200).json({
             success: true,

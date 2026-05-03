@@ -130,7 +130,12 @@ export const createOrder = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate(
+    const orders = await Order.find({
+      $or: [
+        { paymentMethod: { $ne: 'paypal' } },
+        { paymentMethod: 'paypal', paymentStatus: 'Completed' }
+      ]
+    }).populate(
       "items.menuItem",
       "name price category"
     );
