@@ -49,6 +49,30 @@ const menuSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    showInSpecialOffers: {
+      type: Boolean,
+      default: false,
+    },
+    showInChefsSpecials: {
+      type: Boolean,
+      default: false,
+    },
+    showInWeeklySpecials: {
+      type: Boolean,
+      default: false,
+    },
+    specialOffersOrder: {
+      type: Number,
+      default: 0,
+    },
+    chefsSpecialsOrder: {
+      type: Number,
+      default: 0,
+    },
+    weeklySpecialsOrder: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

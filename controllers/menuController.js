@@ -38,7 +38,19 @@ export const getMenuItemById = async (req, res) => {
 // Create a new menu item
 export const createMenuItem = async (req, res) => {
   try {
-    const { name, description, price, category, discount } = req.body;
+    const {
+      name,
+      description,
+      price,
+      category,
+      discount,
+      showInSpecialOffers,
+      showInChefsSpecials,
+      showInWeeklySpecials,
+      specialOffersOrder,
+      chefsSpecialsOrder,
+      weeklySpecialsOrder,
+    } = req.body;
     const image = req?.file?.path;
 
     // Validate required fields
@@ -78,6 +90,12 @@ export const createMenuItem = async (req, res) => {
       category,
       ingredients: parsedIngredients,
       image: uploadedImage?.secure_url || "",
+      showInSpecialOffers: showInSpecialOffers === "true" || showInSpecialOffers === true,
+      showInChefsSpecials: showInChefsSpecials === "true" || showInChefsSpecials === true,
+      showInWeeklySpecials: showInWeeklySpecials === "true" || showInWeeklySpecials === true,
+      specialOffersOrder: parseInt(specialOffersOrder) || 0,
+      chefsSpecialsOrder: parseInt(chefsSpecialsOrder) || 0,
+      weeklySpecialsOrder: parseInt(weeklySpecialsOrder) || 0,
     };
     if (parsedDiscount !== undefined) {
       menuObject.discount = parsedDiscount;
@@ -150,6 +168,30 @@ export const updateMenuItem = async (req, res) => {
           ? req.body.available
           : menuItem.available,
       image: imageUrl,
+      showInSpecialOffers:
+        req.body.showInSpecialOffers !== undefined
+          ? (req.body.showInSpecialOffers === "true" || req.body.showInSpecialOffers === true)
+          : menuItem.showInSpecialOffers,
+      showInChefsSpecials:
+        req.body.showInChefsSpecials !== undefined
+          ? (req.body.showInChefsSpecials === "true" || req.body.showInChefsSpecials === true)
+          : menuItem.showInChefsSpecials,
+      showInWeeklySpecials:
+        req.body.showInWeeklySpecials !== undefined
+          ? (req.body.showInWeeklySpecials === "true" || req.body.showInWeeklySpecials === true)
+          : menuItem.showInWeeklySpecials,
+      specialOffersOrder:
+        req.body.specialOffersOrder !== undefined
+          ? parseInt(req.body.specialOffersOrder) || 0
+          : menuItem.specialOffersOrder,
+      chefsSpecialsOrder:
+        req.body.chefsSpecialsOrder !== undefined
+          ? parseInt(req.body.chefsSpecialsOrder) || 0
+          : menuItem.chefsSpecialsOrder,
+      weeklySpecialsOrder:
+        req.body.weeklySpecialsOrder !== undefined
+          ? parseInt(req.body.weeklySpecialsOrder) || 0
+          : menuItem.weeklySpecialsOrder,
     };
 
     // Conditionally include discount
