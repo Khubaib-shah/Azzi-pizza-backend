@@ -47,9 +47,6 @@ export const createMenuItem = async (req, res) => {
       showInSpecialOffers,
       showInChefsSpecials,
       showInWeeklySpecials,
-      specialOffersOrder,
-      chefsSpecialsOrder,
-      weeklySpecialsOrder,
     } = req.body;
     const image = req?.file?.path;
 
@@ -82,6 +79,10 @@ export const createMenuItem = async (req, res) => {
       }
     }
 
+    const isSpecialOffers = showInSpecialOffers === "true" || showInSpecialOffers === true;
+    const isChefsSpecials = showInChefsSpecials === "true" || showInChefsSpecials === true;
+    const isWeeklySpecials = showInWeeklySpecials === "true" || showInWeeklySpecials === true;
+
     // Create the menu item object
     const menuObject = {
       name,
@@ -90,12 +91,12 @@ export const createMenuItem = async (req, res) => {
       category,
       ingredients: parsedIngredients,
       image: uploadedImage?.secure_url || "",
-      showInSpecialOffers: showInSpecialOffers === "true" || showInSpecialOffers === true,
-      showInChefsSpecials: showInChefsSpecials === "true" || showInChefsSpecials === true,
-      showInWeeklySpecials: showInWeeklySpecials === "true" || showInWeeklySpecials === true,
-      specialOffersOrder: parseInt(specialOffersOrder) || 0,
-      chefsSpecialsOrder: parseInt(chefsSpecialsOrder) || 0,
-      weeklySpecialsOrder: parseInt(weeklySpecialsOrder) || 0,
+      showInSpecialOffers: isSpecialOffers,
+      showInChefsSpecials: isChefsSpecials,
+      showInWeeklySpecials: isWeeklySpecials,
+      specialOffersOrder: 0,
+      chefsSpecialsOrder: 0,
+      weeklySpecialsOrder: 0,
     };
     if (parsedDiscount !== undefined) {
       menuObject.discount = parsedDiscount;
@@ -112,6 +113,7 @@ export const createMenuItem = async (req, res) => {
       .json({ message: "Error creating menu item", error: error.message });
   }
 };
+
 
 export const updateMenuItem = async (req, res) => {
   const { id } = req.params;
@@ -154,6 +156,21 @@ export const updateMenuItem = async (req, res) => {
       }
     }
 
+    const showInSpecialOffers =
+      req.body.showInSpecialOffers !== undefined
+        ? (req.body.showInSpecialOffers === "true" || req.body.showInSpecialOffers === true)
+        : menuItem.showInSpecialOffers;
+
+    const showInChefsSpecials =
+      req.body.showInChefsSpecials !== undefined
+        ? (req.body.showInChefsSpecials === "true" || req.body.showInChefsSpecials === true)
+        : menuItem.showInChefsSpecials;
+
+    const showInWeeklySpecials =
+      req.body.showInWeeklySpecials !== undefined
+        ? (req.body.showInWeeklySpecials === "true" || req.body.showInWeeklySpecials === true)
+        : menuItem.showInWeeklySpecials;
+
     const updateData = {
       name: req.body.name || menuItem.name,
       description: req.body.description || menuItem.description,
@@ -168,30 +185,12 @@ export const updateMenuItem = async (req, res) => {
           ? req.body.available
           : menuItem.available,
       image: imageUrl,
-      showInSpecialOffers:
-        req.body.showInSpecialOffers !== undefined
-          ? (req.body.showInSpecialOffers === "true" || req.body.showInSpecialOffers === true)
-          : menuItem.showInSpecialOffers,
-      showInChefsSpecials:
-        req.body.showInChefsSpecials !== undefined
-          ? (req.body.showInChefsSpecials === "true" || req.body.showInChefsSpecials === true)
-          : menuItem.showInChefsSpecials,
-      showInWeeklySpecials:
-        req.body.showInWeeklySpecials !== undefined
-          ? (req.body.showInWeeklySpecials === "true" || req.body.showInWeeklySpecials === true)
-          : menuItem.showInWeeklySpecials,
-      specialOffersOrder:
-        req.body.specialOffersOrder !== undefined
-          ? parseInt(req.body.specialOffersOrder) || 0
-          : menuItem.specialOffersOrder,
-      chefsSpecialsOrder:
-        req.body.chefsSpecialsOrder !== undefined
-          ? parseInt(req.body.chefsSpecialsOrder) || 0
-          : menuItem.chefsSpecialsOrder,
-      weeklySpecialsOrder:
-        req.body.weeklySpecialsOrder !== undefined
-          ? parseInt(req.body.weeklySpecialsOrder) || 0
-          : menuItem.weeklySpecialsOrder,
+      showInSpecialOffers,
+      showInChefsSpecials,
+      showInWeeklySpecials,
+      specialOffersOrder: 0,
+      chefsSpecialsOrder: 0,
+      weeklySpecialsOrder: 0,
     };
 
     // Conditionally include discount
