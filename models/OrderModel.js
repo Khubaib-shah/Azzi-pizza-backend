@@ -33,6 +33,11 @@ const orderSchema = new mongoose.Schema(
 
     description: String,
 
+    orderNotes: {
+      type: String,
+      default: "",
+    },
+
     totalPrice: {
       type: Number,
       required: [true, "Total price is required"],
@@ -42,7 +47,7 @@ const orderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["cash", "paypal", "scan", "bancomat"],
+      enum: ["cash", "paypal", "scan", "bancomat", "satispay"],
       required: true,
     },
 
@@ -54,7 +59,7 @@ const orderSchema = new mongoose.Schema(
     
     orderStatus: {
       type: String,
-      enum: ["Pending", "Preparing", "Out for Delivery", "Delivered"],
+      enum: ["Pending", "Preparing", "Out for Delivery", "Delivered", "Cancelled"],
       default: "Pending",
     },
     
@@ -94,6 +99,9 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ orderStatus: 1, createdAt: -1 });
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;
